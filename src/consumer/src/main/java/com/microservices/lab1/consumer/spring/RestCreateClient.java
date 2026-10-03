@@ -1,8 +1,10 @@
 package com.microservices.lab1.consumer.spring;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.util.StopWatch;
 import org.springframework.web.client.RestClient;
@@ -17,8 +19,20 @@ public class RestCreateClient {
 	private String serviceUrl;
 	
 	@Bean
-	public RestClient restClient() {
-		return RestClient.builder().baseUrl(serviceUrl).requestInterceptor(timingInterceptor()).build();
+	@Primary
+	public RestClient.Builder primaryRestBuilder() {
+		return RestClient.builder();
+	}
+	
+	@Bean
+	@LoadBalanced
+	public RestClient.Builder balancedRestBuilder() {
+		return RestClient.builder();
+	}
+	
+	@Bean
+	public RestClient restClient(@LoadBalanced RestClient.Builder builder) {
+		return builder.baseUrl(serviceUrl).requestInterceptor(timingInterceptor()).build();
 	}
 
 	private ClientHttpRequestInterceptor timingInterceptor() {
