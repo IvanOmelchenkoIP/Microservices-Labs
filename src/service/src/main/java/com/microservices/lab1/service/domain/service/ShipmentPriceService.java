@@ -12,9 +12,10 @@ public class ShipmentPriceService {
 
 	private final ShipmentRepository repository;
 	
-	private final Double  BASE_PRICE = 5.0;
+	private final Double BASE_PRICE = 5.0;
+	private final Double SHIPMENT_COST = 0.05;
 	
 	public Double calculateShipmentPrice(String cityId) {
-		return BASE_PRICE + repository.getShipmentDistance(cityId).orElse(0.0);
+		return BASE_PRICE + repository.getShipmentDistance(cityId).orElse(0.0) * SHIPMENT_COST;
 	}
 }
